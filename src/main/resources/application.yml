@@ -1,0 +1,25 @@
+spring:
+  application:
+    name:
+      careroot
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:D:/IdeaProjects/testdb/careroute'
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
