@@ -1,7 +1,29 @@
 spring:
+  profiles:
+    active: ${PROFILE_NAME}
+
   application:
     name:
       careroot
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+oauth:
+  base-url:
+    kakao: ${KAKAO_BASE_URL}
+  app-id:
+    kakao: ${KAKAO_APP_ID}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
 
   datasource:
     driver-class-name: org.h2.Driver
@@ -17,9 +39,29 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         show_sql: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prd
+
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+
+jpa:
+  hibernate:
+    ddl-auto: validate
+  show-sql: true
+  properties:
+    hibernate.format_sql: true
+    dialect: org.hibernate.dialect.MySQL8InnoDBDialect
