@@ -4,10 +4,9 @@ import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
 import com.minpaeng.careroute.domain.member.repository.entity.Member;
-import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import com.minpaeng.careroute.domain.member.repository.entity.enums.SocialType;
-import com.minpaeng.careroute.domain.member.security.KakaoOauthHelper;
 import com.minpaeng.careroute.domain.member.security.OIDCDecodePayload;
+import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,15 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-    private final KakaoOauthHelper kakaoOauthHelper;
+    private final OauthOIDCHelper oauthOIDCHelper;
     private final MemberRepository memberRepository;
 
     @Transactional
     @Override
     public MemberJoinResponse login(MemberJoinRequest memberJoinRequest) {
         String idToken = memberJoinRequest.getIdToken();
-        System.out.println("서비스 진입: " + idToken);
-        OIDCDecodePayload oidcDecodePayload = kakaoOauthHelper.getOIDCDecodePayload(idToken);
+        log.info("서비스 진입: " + idToken);
+        OIDCDecodePayload oidcDecodePayload = oauthOIDCHelper.getOIDCDecodePayload(idToken);
         Optional<Member> optionalMember = memberRepository.findMemberBySocialId(oidcDecodePayload.getSub());
         Member member;
         if (optionalMember.isEmpty()) {
@@ -44,9 +43,5 @@ public class MemberServiceImpl implements MemberService {
                 .message("로그인 완료")
                 .userId(member.getId())
                 .build();
-    }
-
-    private void loginByKakao(MemberJoinRequest memberJoinRequest) {
-
     }
 }

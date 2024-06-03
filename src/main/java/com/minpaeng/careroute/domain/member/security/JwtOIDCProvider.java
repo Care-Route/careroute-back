@@ -6,6 +6,7 @@ import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -85,5 +87,13 @@ public class JwtOIDCProvider {
 
         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(n, e);
         return keyFactory.generatePublic(keySpec);
+    }
+
+    public Optional<String> extractIdToken(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader("Authorization"));
+    }
+
+    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader("Authorization-Refresh"));
     }
 }

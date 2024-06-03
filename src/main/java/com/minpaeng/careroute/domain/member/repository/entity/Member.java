@@ -42,7 +42,7 @@ public class Member {
     @Column(length = 400)
     private String profileImagePath;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 

@@ -1,5 +1,8 @@
 package com.minpaeng.careroute.domain.member.repository.entity.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum SocialType {
     KAKAO("카카오"),
     GOOGLE("구글");
