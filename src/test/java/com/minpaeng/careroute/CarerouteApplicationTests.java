@@ -1,10 +1,10 @@
-package com.minpaeng.careroot;
+package com.minpaeng.careroute;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CarerootApplicationTests {
+class CarerouteApplicationTests {
 
     @Test
     void contextLoads() {
