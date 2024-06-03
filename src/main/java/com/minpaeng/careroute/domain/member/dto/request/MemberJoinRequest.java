@@ -10,7 +10,6 @@ import lombok.Setter;
 public class MemberJoinRequest {
     private String idToken;
     private String nickName;
-    private String userType;
     private String email;
     private String sns;
 }

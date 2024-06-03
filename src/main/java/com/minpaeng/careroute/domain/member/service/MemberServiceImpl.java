@@ -34,8 +34,6 @@ public class MemberServiceImpl implements MemberService {
             member = Member.builder()
                     .socialType(oidcDecodePayload.getIss().contains("kakao") ? SocialType.KAKAO : SocialType.GOOGLE)
                     .socialId(oidcDecodePayload.getSub())
-                    .role(memberJoinRequest.getUserType().equals(
-                            MemberRole.GUIDE.getValue()) ? MemberRole.GUIDE : MemberRole.TARGET)
                     .nickname(memberJoinRequest.getNickName())
                     .build();
             memberRepository.save(member);

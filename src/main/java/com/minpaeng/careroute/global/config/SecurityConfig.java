@@ -1,5 +1,6 @@
 package com.minpaeng.careroute.global.config;
 
+import com.minpaeng.careroute.domain.member.security.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +21,10 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-//    @Bean
-//    public AuthenticationFilter authenticationFilter() {
-//        return new AuthenticationFilter();
-//    }
+    @Bean
+    public AuthenticationFilter authenticationFilter() {
+        return new AuthenticationFilter();
+    }
 
     // 스프링 시큐리티 기능 비활성화 (H2 DB 접근을 위해)
 	@Bean
@@ -40,7 +41,7 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(Collections.singletonList("*"));
-            config.setAllowCredentials(true);
+            config.setAllowCredentials(false);
             return config;
         };
     }
