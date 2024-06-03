@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum MemberRole {
 
-    TEACHER("안내인"),
-    STUDENT("안내대상");
+    GUIDE("guide"),
+    TARGET("target");
 
     private final String value;
 

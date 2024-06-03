@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,13 +33,10 @@ public class Member {
     @Column(length = 200)
     private String nickname;
 
-    @Column(nullable = false, length = 20)
-    private String name;
-
     @Column(length = 3000)
     private String address;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phoneNumber;
 
     @Column(length = 400)
@@ -47,4 +45,12 @@ public class Member {
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    @Builder
+    public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {
+        this.socialType = socialType;
+        this.socialId = socialId;
+        this.nickname = nickname;
+        this.role = role;
+    }
 }

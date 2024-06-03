@@ -8,5 +8,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class MemberJoinRequest {
-    private String authorizationToken;
+    private String idToken;
+    private String nickName;
+    private String userType;
+    private String email;
+    private String sns;
 }
