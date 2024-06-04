@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
 import com.minpaeng.careroute.domain.member.repository.entity.Member;
 import com.minpaeng.careroute.domain.mypage.dto.response.ProfileImageUpdateResponse;
+import com.minpaeng.careroute.domain.mypage.dto.response.ProfileInfoResponse;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import com.minpaeng.careroute.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,12 @@ public class MypageServiceImpl implements MypageService {
 
     private final AmazonS3 amazonS3;
     private final MemberRepository memberRepository;
+
+    @Override
+    public ProfileInfoResponse getProfileInfo(String socialId) {
+        Member member = getMemberBySocialId(socialId);
+        return new ProfileInfoResponse(member);
+    }
 
     @Transactional
     @Override

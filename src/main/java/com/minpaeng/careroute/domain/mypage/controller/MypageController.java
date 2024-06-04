@@ -3,10 +3,12 @@ package com.minpaeng.careroute.domain.mypage.controller;
 import com.minpaeng.careroute.domain.mypage.dto.request.AddressUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.dto.request.NicknameUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.dto.response.ProfileImageUpdateResponse;
+import com.minpaeng.careroute.domain.mypage.dto.response.ProfileInfoResponse;
 import com.minpaeng.careroute.domain.mypage.service.MypageService;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +25,20 @@ import java.security.Principal;
 public class MypageController {
     private final MypageService mypageService;
 
+    @GetMapping
+    public ProfileInfoResponse getProfileInfo(Principal principal) {
+        return mypageService.getProfileInfo(principal.getName());
+    }
+
     @PutMapping("/nickname")
-    public BaseResponse changeNickname(Principal principal, @RequestBody NicknameUpdateRequest request) {
+    public BaseResponse changeNickname(Principal principal,
+                                       @RequestBody NicknameUpdateRequest request) {
         return mypageService.changeNickname(principal.getName(), request.getNickname());
     }
 
     @PutMapping("/address")
-    public BaseResponse changeAddress(Principal principal, @RequestBody AddressUpdateRequest request) {
+    public BaseResponse changeAddress(Principal principal,
+                                      @RequestBody AddressUpdateRequest request) {
         return mypageService.changeAddress(principal.getName(), request.getAddress());
     }
 
