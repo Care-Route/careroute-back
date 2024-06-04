@@ -1,14 +1,13 @@
-package com.minpaeng.careroute.global.exception;
+package com.minpaeng.careroute.global.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
 @Builder
-public class ExceptionResponseDto {
+@AllArgsConstructor
+public class BaseResponse {
     private int statusCode;
     private String message;
 }

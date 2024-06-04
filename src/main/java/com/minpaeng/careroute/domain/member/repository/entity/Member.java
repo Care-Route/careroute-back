@@ -13,7 +13,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -36,7 +38,7 @@ public class Member {
     @Column(length = 3000)
     private String address;
 
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     private String phoneNumber;
 
     @Column(length = 400)
@@ -45,6 +47,10 @@ public class Member {
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    public void setRole(MemberRole role) {
+        this.role = role;
+    }
 
     @Builder
     public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {

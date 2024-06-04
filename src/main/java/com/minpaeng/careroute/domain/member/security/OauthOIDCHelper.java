@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -109,28 +109,18 @@ public class OauthOIDCHelper {
         return Optional.ofNullable(request.getHeader("Authorization"));
     }
 
-    public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader("Authorization-Refresh"));
-    }
-
     public Optional<String> getIss(String idToken) {
         try {
-            // JWT를 점(.)으로 분리하여 헤더, 페이로드, 서명 부분으로 나누기
             String[] parts = idToken.split("\\.");
             if (parts.length != 3) {
                 throw new IllegalArgumentException("Invalid JWT token");
             }
 
-            // Base64 URL 디코딩하여 페이로드 부분을 JSON 문자열로 변환
             String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
-
-            // JSON 문자열을 맵으로 파싱
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> payloadMap = mapper.readValue(payloadJson, Map.class);
 
-            // iss 값을 추출하여 출력
             String issuer = (String) payloadMap.get("iss");
-            System.out.println("Issuer: " + issuer);
             return Optional.of(issuer);
         } catch (IOException e) {
             log.info(e.toString());
@@ -138,8 +128,10 @@ public class OauthOIDCHelper {
         return Optional.empty();
     }
 
-    public Authentication getAuthentication(String idToken, String sub) {
+    public void setAuthentication(String idToken, String sub) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(sub);
-        return new UsernamePasswordAuthenticationToken(userDetails, idToken, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken newAuth =
+                new UsernamePasswordAuthenticationToken(userDetails, idToken, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 }

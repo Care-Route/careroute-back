@@ -2,6 +2,7 @@ package com.minpaeng.careroute.domain.member.security;
 
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
 import com.minpaeng.careroute.domain.member.repository.entity.Member;
+import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Member member = memberRepository.findMemberBySocialId(socialId)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 사용자가 없습니다."));
         return UserDetailsImpl.builder()
-                .memberRole(member.getRole().getValue())
+                .memberRole(member.getRole() != null ? member.getRole().name() : null)
                 .socialId(member.getSocialId())
                 .socialType(member.getSocialType().getValue())
                 .build();
