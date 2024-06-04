@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -29,8 +30,10 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collectors = new ArrayList<>();
-        collectors.add(() -> "ROLE_" + memberRole);
-        return collectors;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        if (memberRole != null) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + memberRole));
+        }
+        return authorities;
     }
 }
