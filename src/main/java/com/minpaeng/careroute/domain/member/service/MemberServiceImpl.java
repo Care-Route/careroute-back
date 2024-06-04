@@ -49,7 +49,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberJoinResponse.builder()
                 .statusCode(200)
                 .message("로그인 완료")
-                .userId(member.getId())
+                .memberId(member.getId())
                 .build();
     }
 
