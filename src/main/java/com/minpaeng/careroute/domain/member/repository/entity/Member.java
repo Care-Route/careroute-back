@@ -36,7 +36,7 @@ public class Member {
     @Column(length = 3000)
     private String address;
 
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     private String phoneNumber;
 
     @Column(length = 400)
