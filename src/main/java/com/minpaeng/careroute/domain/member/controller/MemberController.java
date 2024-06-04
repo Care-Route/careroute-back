@@ -2,11 +2,13 @@ package com.minpaeng.careroute.domain.member.controller;
 
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
+import com.minpaeng.careroute.domain.member.dto.request.TypeSaveRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.service.MemberService;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +32,19 @@ public class MemberController {
         return memberService.login(request);
     }
 
+    @Operation(summary = "사용자 타입 지정", description = "GUIDE(안내인), TARGET(안내 대상)으로 사용자 유형을 지정하는 API")
+    @PostMapping("/type")
+    public BaseResponse selectType(HttpServletRequest servletRequest,
+                                   Principal principal,
+                                   @RequestBody TypeSaveRequest request) {
+        String idToken = servletRequest.getHeader("Authorization");
+        return memberService.selectType(idToken, principal.getName(), request.getType());
+    }
+
     @Operation(summary = "기기 연결", description = "기기 연결 API")
     @PostMapping("/connection")
     public BaseResponse connectDevice(Principal principal,
                                       @RequestBody ConnectionRequest request) {
-        log.info("socialId: " + principal.getName());
         return memberService.connectDevice(principal.getName(), request);
     }
 }

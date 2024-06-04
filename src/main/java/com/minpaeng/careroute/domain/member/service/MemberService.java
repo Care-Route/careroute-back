@@ -11,4 +11,6 @@ public interface MemberService {
     MemberJoinResponse login(MemberJoinRequest memberJoinRequest);
 
     BaseResponse connectDevice(String socialId, ConnectionRequest request);
+
+    BaseResponse selectType(String idToken, String socialId, String type);
 }
