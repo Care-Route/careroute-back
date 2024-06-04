@@ -52,6 +52,18 @@ public class Member {
         this.role = role;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
+
     @Builder
     public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {
         this.socialType = socialType;
