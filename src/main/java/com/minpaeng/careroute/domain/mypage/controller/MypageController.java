@@ -1,5 +1,6 @@
 package com.minpaeng.careroute.domain.mypage.controller;
 
+import com.minpaeng.careroute.domain.mypage.dto.request.AddressUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.dto.request.NicknameUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.service.MypageService;
 import com.minpaeng.careroute.global.dto.BaseResponse;
@@ -22,5 +23,10 @@ public class MypageController {
     @PutMapping("/nickname")
     public BaseResponse changeNickname(Principal principal, @RequestBody NicknameUpdateRequest request) {
         return mypageService.changeNickname(principal.getName(), request.getNickname());
+    }
+
+    @PutMapping("/address")
+    public BaseResponse changeAddress(Principal principal, @RequestBody AddressUpdateRequest request) {
+        return mypageService.changeAddress(principal.getName(), request.getAddress());
     }
 }
