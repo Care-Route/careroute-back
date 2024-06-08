@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -33,4 +34,11 @@ public class Bookmark {
 
     @Column(nullable = false)
     private double longitude;
+
+    @Builder
+    public Bookmark(Member member, double latitude, double longitude) {
+        this.member = member;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }
