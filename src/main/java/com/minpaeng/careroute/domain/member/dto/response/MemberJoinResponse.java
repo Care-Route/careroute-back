@@ -14,4 +14,5 @@ public class MemberJoinResponse {
     private int statusCode;
     private String message;
     private int memberId;
+    private boolean newMember;
 }
