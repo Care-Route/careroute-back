@@ -37,9 +37,7 @@ public class MemberServiceImpl implements MemberService {
         OIDCDecodePayload oidcDecodePayload = oauthOIDCHelper.getOIDCDecodePayload(idToken);
         Optional<Member> optionalMember = memberRepository.findMemberBySocialId(oidcDecodePayload.getSub());
         Member member;
-        boolean newMember = false;
         if (optionalMember.isEmpty()) {
-            newMember = true;
             member = Member.builder()
                     .socialType(oidcDecodePayload.getIss().contains("kakao") ? SocialType.KAKAO : SocialType.GOOGLE)
                     .socialId(oidcDecodePayload.getSub())
@@ -52,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
                 .statusCode(200)
                 .message("로그인 완료")
                 .memberId(member.getId())
-                .newMember(newMember)
+                .type(member.getRole())
                 .build();
     }
 

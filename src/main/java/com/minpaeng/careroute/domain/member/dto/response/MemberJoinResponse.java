@@ -1,5 +1,6 @@
 package com.minpaeng.careroute.domain.member.dto.response;
 
+import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +15,5 @@ public class MemberJoinResponse {
     private int statusCode;
     private String message;
     private int memberId;
-    private boolean newMember;
+    private MemberRole type;
 }
