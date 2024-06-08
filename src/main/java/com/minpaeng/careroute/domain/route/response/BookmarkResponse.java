@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class BookmarkResponse {
+    private int bookmarkId;
     private double latitude;
     private double longitude;
 }

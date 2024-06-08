@@ -81,7 +81,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         Member member = getMemberBySocialId(socialId);
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
         List<BookmarkResponse> responses = bookmarks.stream()
-                .map(b -> new BookmarkResponse(b.getLatitude(), b.getLongitude()))
+                .map(b -> new BookmarkResponse(b.getId(), b.getLatitude(), b.getLongitude()))
                 .toList();
         return BookmarkListResponse.builder()
                 .statusCode(200)
