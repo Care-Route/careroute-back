@@ -18,6 +18,18 @@ oauth:
   app-id:
     kakao: ${KAKAO_APP_ID}
 
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    s3:
+      bucket: readyou
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+
 springdoc:
   swagger-ui:
     path: /api/swagger-ui

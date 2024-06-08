@@ -37,11 +37,13 @@ public class MemberServiceImpl implements MemberService {
         OIDCDecodePayload oidcDecodePayload = oauthOIDCHelper.getOIDCDecodePayload(idToken);
         Optional<Member> optionalMember = memberRepository.findMemberBySocialId(oidcDecodePayload.getSub());
         Member member;
+        boolean newMember = false;
         if (optionalMember.isEmpty()) {
+            newMember = true;
             member = Member.builder()
                     .socialType(oidcDecodePayload.getIss().contains("kakao") ? SocialType.KAKAO : SocialType.GOOGLE)
                     .socialId(oidcDecodePayload.getSub())
-                    .nickname(memberJoinRequest.getNickName())
+                    .nickname(memberJoinRequest.getNickname())
                     .build();
             memberRepository.save(member);
         } else member = optionalMember.get();
@@ -49,7 +51,8 @@ public class MemberServiceImpl implements MemberService {
         return MemberJoinResponse.builder()
                 .statusCode(200)
                 .message("로그인 완료")
-                .userId(member.getId())
+                .memberId(member.getId())
+                .newMember(newMember)
                 .build();
     }
 

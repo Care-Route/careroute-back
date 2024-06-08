@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class MemberJoinResponse {
     private int statusCode;
     private String message;
-    private int userId;
+    private int memberId;
+    private boolean newMember;
 }
