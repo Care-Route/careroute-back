@@ -40,6 +40,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
         Bookmark bookmark = Bookmark.builder()
                 .member(member)
+                .title(request.getTitle())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .build();
@@ -52,6 +53,7 @@ public class BookmarkServiceImpl implements BookmarkService {
                 .build();
     }
 
+    @Transactional
     @Override
     public BaseResponse deleteBookmark(String socialId, int bookmarkId) {
         log.info("북마크 해제 요청 진입: " + bookmarkId);
@@ -81,7 +83,12 @@ public class BookmarkServiceImpl implements BookmarkService {
         Member member = getMemberBySocialId(socialId);
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
         List<BookmarkResponse> responses = bookmarks.stream()
-                .map(b -> new BookmarkResponse(b.getLatitude(), b.getLongitude()))
+                .map(b -> BookmarkResponse.builder()
+                        .bookmarkId(b.getId())
+                        .title(b.getTitle())
+                        .latitude(b.getLatitude())
+                        .longitude(b.getLongitude())
+                        .build())
                 .toList();
         return BookmarkListResponse.builder()
                 .statusCode(200)
