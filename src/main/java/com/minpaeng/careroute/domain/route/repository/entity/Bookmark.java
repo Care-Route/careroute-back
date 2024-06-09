@@ -30,14 +30,18 @@ public class Bookmark {
     private Member member;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private double latitude;
 
     @Column(nullable = false)
     private double longitude;
 
     @Builder
-    public Bookmark(Member member, double latitude, double longitude) {
+    public Bookmark(Member member, String title, double latitude, double longitude) {
         this.member = member;
+        this.title = title;
         this.latitude = latitude;
         this.longitude = longitude;
     }
