@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class MemberJoinRequest {
     private String idToken;
-    private String nickName;
+    private String nickname;
     private String email;
     private String sns;
 }

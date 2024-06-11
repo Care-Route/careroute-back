@@ -45,6 +45,7 @@ public class SecurityConfig {
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowedOriginPatterns(Collections.singletonList("*"));
+            config.addExposedHeader("Authorization");
             config.setAllowCredentials(false);
             return config;
         };
