@@ -1,6 +1,7 @@
 package com.minpaeng.careroute.global.config;
 
 import com.minpaeng.careroute.domain.member.security.AuthenticationFilter;
+import com.minpaeng.careroute.domain.member.security.JwtAuthenticationEntryPoint;
 import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final OauthOIDCHelper oauthOIDCHelper;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public AuthenticationFilter authenticationFilter() {
@@ -67,8 +69,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//                .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();
     }
 }
