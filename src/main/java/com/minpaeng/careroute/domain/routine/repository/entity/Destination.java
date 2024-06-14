@@ -1,4 +1,4 @@
-package com.minpaeng.careroute.domain.member.repository.entity;
+package com.minpaeng.careroute.domain.routine.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,30 +9,35 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.time.LocalTime;
+
+@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Connection {
+public class Destination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "connection_id")
+    @Column(name = "destination_id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_id")
-    private Member to;
+    @JoinColumn(name = "routine_id", nullable = false)
+    private Routine routine;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_id")
-    private Member from;
+    @Column(nullable = false)
+    private String name;
 
-    @Builder
-    public Connection(Member to, Member from) {
-        this.to = to;
-        this.from = from;
-    }
+    @Column(nullable = false)
+    private double destinationLatitude;
+
+    @Column(nullable = false)
+    private double destinationLongitude;
+
+    @Column
+    private LocalTime time;
 }

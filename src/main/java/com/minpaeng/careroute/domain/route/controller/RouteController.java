@@ -46,4 +46,9 @@ public class RouteController {
     public BookmarkListResponse getSpotBookmarks(Principal principal) {
         return bookmarkService.getSpotBookmarks(principal.getName());
     }
+
+    // 현재 위치 전송
+
+
+    // 길 안내 시작
 }

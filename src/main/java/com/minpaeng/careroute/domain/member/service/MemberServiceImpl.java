@@ -93,7 +93,7 @@ public class MemberServiceImpl implements MemberService {
         Connection connection = Connection.builder()
                 .from(from)
                 .to(to)
-                .authCode(request.getAuthCode())
+//                .authCode(request.getAuthCode())
                 .build();
 
         connectionRepository.save(connection);
