@@ -1,5 +1,6 @@
 package com.minpaeng.careroute.domain.member.controller;
 
+import com.minpaeng.careroute.domain.member.dto.request.ConnectionCodeRequest;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.request.TypeSaveRequest;
@@ -41,7 +42,14 @@ public class MemberController {
         return memberService.selectType(idToken, principal.getName(), request.getType());
     }
 
-    @Operation(summary = "기기 연결", description = "기기 연결 API")
+    @Operation(summary = "인증코드 전송", description = "기기 연결을 위한 인증코드 전송 API")
+    @PostMapping("/connection/code")
+    public BaseResponse generateConnection(Principal principal,
+                                           @RequestBody ConnectionCodeRequest request) {
+        return memberService.connectCode(principal.getName(), request);
+    }
+
+    @Operation(summary = "기기 연결", description = "인증코드 확인 및 연결 수립 API")
     @PostMapping("/connection")
     public BaseResponse connectDevice(Principal principal,
                                       @RequestBody ConnectionRequest request) {

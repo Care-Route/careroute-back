@@ -3,7 +3,7 @@ package com.minpaeng.careroute.domain.member.dto.request;
 import lombok.Getter;
 
 @Getter
-public class ConnectionRequest {
-    private String fromNumber;
+public class ConnectionCodeRequest {
+    private String toNumber;
     private String authCode;
 }
