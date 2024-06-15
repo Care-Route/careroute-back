@@ -65,6 +65,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/members/login")
                         .permitAll()
+                        .requestMatchers("/api/routine/targets")
+                        .hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

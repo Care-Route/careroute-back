@@ -153,11 +153,15 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
         else {
-            throw CustomException.builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .code(HttpStatus.NO_CONTENT.value())
-                    .message("유효하지 않은 유저 유형에 대한 요청입니다: "
-                            + to.getRole() + "-" + from.getRole() + "연결 시도 중")
+//            throw CustomException.builder()
+//                    .status(HttpStatus.BAD_REQUEST)
+//                    .code(HttpStatus.NO_CONTENT.value())
+//                    .message("유효하지 않은 유저 유형에 대한 요청입니다: "
+//                            + to.getRole() + "-" + from.getRole() + "연결 시도 중")
+//                    .build();
+            connection = Connection.builder()
+                    .guide(from)
+                    .target(to)
                     .build();
         }
         connectionAuthRepository.delete(connectionDto);

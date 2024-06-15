@@ -27,7 +27,7 @@ public class Connection {
     private Member guide;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_id")
+    @JoinColumn(name = "target_id", nullable = false)
     private Member target;
 
     @Builder

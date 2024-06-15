@@ -2,18 +2,24 @@ package com.minpaeng.careroute.domain.member.repository.entity;
 
 import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import com.minpaeng.careroute.domain.member.repository.entity.enums.SocialType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ToString
 @Getter
@@ -47,6 +53,9 @@ public class Member {
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    @OneToMany(mappedBy = "target", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Connection> connections = new ArrayList<>();
 
     public void setRole(MemberRole role) {
         this.role = role;
