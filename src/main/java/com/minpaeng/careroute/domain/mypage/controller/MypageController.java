@@ -2,6 +2,7 @@ package com.minpaeng.careroute.domain.mypage.controller;
 
 import com.minpaeng.careroute.domain.mypage.dto.request.AddressUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.dto.request.NicknameUpdateRequest;
+import com.minpaeng.careroute.domain.mypage.dto.request.PhoneNumberUpdateRequest;
 import com.minpaeng.careroute.domain.mypage.dto.response.ProfileImageUpdateResponse;
 import com.minpaeng.careroute.domain.mypage.dto.response.ProfileInfoResponse;
 import com.minpaeng.careroute.domain.mypage.service.MypageService;
@@ -51,5 +52,12 @@ public class MypageController {
     public ProfileImageUpdateResponse changeProfileImage(Principal principal,
                                                          @RequestPart(name = "image") MultipartFile image) {
         return mypageService.changeProfilePhoto(principal.getName(), image);
+    }
+
+    @Operation(summary = "휴대폰 번호 업데이트", description = "휴대폰 번호 업데이트 API")
+    @PutMapping("/phone")
+    public BaseResponse changeProfileImage(Principal principal,
+                                                         @RequestBody PhoneNumberUpdateRequest request) {
+        return mypageService.changePhoneNumber(principal.getName(), request.getPhoneNumber());
     }
 }

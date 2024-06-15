@@ -64,6 +64,10 @@ public class Member {
         this.profileImagePath = profileImagePath;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     @Builder
     public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {
         this.socialType = socialType;

@@ -80,6 +80,17 @@ public class MypageServiceImpl implements MypageService {
         }
     }
 
+    @Override
+    @Transactional
+    public BaseResponse changePhoneNumber(String socialId, String phoneNumber) {
+        Member member = getMemberBySocialId(socialId);
+        member.setPhoneNumber(phoneNumber);
+        return BaseResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("휴대폰 번호가 변경되었습니다: " + phoneNumber)
+                .build();
+    }
+
     private Member getMemberBySocialId(String socialId) {
         return memberRepository.findMemberBySocialId(socialId)
                 .orElseThrow(() -> CustomException.builder()
