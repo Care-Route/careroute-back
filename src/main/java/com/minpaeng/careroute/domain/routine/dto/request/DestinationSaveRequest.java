@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 @Getter
 public class DestinationSaveRequest {
+    private String name;
     private double destinationLatitude;
     private double destinationLongitude;
     private LocalTime time;

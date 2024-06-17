@@ -6,6 +6,7 @@ import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -53,7 +54,6 @@ public class SecurityConfig {
         };
     }
 
-    // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/members/login")
                         .permitAll()
                         .requestMatchers("/api/routine/targets")
+                        .hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.POST, "/api/routine")
                         .hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session

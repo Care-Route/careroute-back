@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -40,4 +41,14 @@ public class Destination {
 
     @Column
     private LocalTime time;
+
+    @Builder
+    public Destination(Routine routine, String name,
+                       double destinationLatitude, double destinationLongitude, LocalTime time) {
+        this.routine = routine;
+        this.name = name;
+        this.destinationLatitude = destinationLatitude;
+        this.destinationLongitude = destinationLongitude;
+        this.time = time;
+    }
 }
