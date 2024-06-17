@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoutineController {
     private final RoutineService routineService;
-    
+
     @Operation(summary = "안내대상 조회", description = "안내인과 연결된 안내대상 목록 조회 API")
     @GetMapping("/targets")
     public TargetInfoListResponse getTargetInfo(Principal principal) {
@@ -60,9 +60,10 @@ public class RoutineController {
     }
 
     // 일정 삭제
-    @DeleteMapping("/{routineId}")
+    @Operation(summary = "일정 제거", description = "일정 아이디로 일정을 삭제하는 API")
+    @DeleteMapping
     public BaseResponse deleteRoutine(Principal principal,
-                                      @PathVariable int routineId) {
+                                      @RequestParam int routineId) {
         return routineService.deleteRoutine(principal.getName(), routineId);
     }
 

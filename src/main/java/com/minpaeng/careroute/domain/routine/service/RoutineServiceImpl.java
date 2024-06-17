@@ -76,7 +76,15 @@ public class RoutineServiceImpl implements RoutineService {
     @Override
     @Transactional
     public BaseResponse deleteRoutine(String name, int routineId) {
-        return null;
+        // 올바른 사용자의 요청인지 확인하는 로직 추가 필요
+
+        routineRepository.findById(routineId)
+                .orElseThrow(() -> getNotExistRoutine(routineId));
+        routineRepository.deleteRoutineById(routineId);
+        return BaseResponse.builder()
+                .statusCode(200)
+                .message("일정 삭제 완료: " + routineId)
+                .build();
     }
 
     private Member getMember(String socialId) {
@@ -136,6 +144,14 @@ public class RoutineServiceImpl implements RoutineService {
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.PROCESSING.value())
                 .message("최대 세 개의 목적지를 설정할 수 있습니다.")
+                .build();
+    }
+
+    private CustomException getNotExistRoutine(int routineId) {
+        return CustomException.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("아이디 " + routineId + "에 해당하는 일정 데이터가 존재하지 않습니다.")
                 .build();
     }
 }
