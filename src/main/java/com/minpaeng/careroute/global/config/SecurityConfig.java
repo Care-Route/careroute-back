@@ -1,10 +1,12 @@
 package com.minpaeng.careroute.global.config;
 
 import com.minpaeng.careroute.domain.member.security.AuthenticationFilter;
+import com.minpaeng.careroute.domain.member.security.JwtAuthenticationEntryPoint;
 import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -24,6 +26,7 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final OauthOIDCHelper oauthOIDCHelper;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public AuthenticationFilter authenticationFilter() {
@@ -51,7 +54,6 @@ public class SecurityConfig {
         };
     }
 
-    // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -63,12 +65,16 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/members/login")
                         .permitAll()
+                        .requestMatchers("/api/routine/targets")
+                        .hasRole("GUIDE")
+                        .requestMatchers(HttpMethod.POST, "/api/routine")
+                        .hasRole("GUIDE")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//                .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint));
         return http.build();
     }
 }

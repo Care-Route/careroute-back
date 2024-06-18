@@ -29,8 +29,8 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Override
     public BookmarkSaveResponse saveSpotBookmark(String socialId, BookmarkSaveRequest request) {
         Member member = getMemberBySocialId(socialId);
-        long bookmarksCnt = bookmarkRepository.countByMember(member);
-        if (bookmarksCnt >= 5) {
+        List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
+        if (!bookmarks.isEmpty() && bookmarks.size() >= 5) {
             throw CustomException.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .message("최대 5개의 즐겨찾기를 설정할 수 있습니다.")
@@ -38,6 +38,16 @@ public class BookmarkServiceImpl implements BookmarkService {
                     .build();
         }
 
+        bookmarks.forEach(b -> {
+            if (b.getLatitude() == request.getLatitude() && b.getLongitude() == request.getLongitude()) {
+                throw CustomException.builder()
+                        .status(HttpStatus.BAD_REQUEST)
+                        .code(400)
+                        .message("이미 등록된 즐겨찾기 입니다. latitude: " + request.getLatitude()
+                                + ", longitude: " + request.getLongitude())
+                        .build();
+            }
+        });
         Bookmark bookmark = Bookmark.builder()
                 .member(member)
                 .title(request.getTitle())

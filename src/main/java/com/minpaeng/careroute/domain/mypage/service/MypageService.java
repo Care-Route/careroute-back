@@ -9,6 +9,6 @@ public interface MypageService {
     BaseResponse changeNickname(String socialId, String nickname);
     BaseResponse changeAddress(String socialId, String address);
     ProfileImageUpdateResponse changeProfilePhoto(String socialId, MultipartFile image);
-
     ProfileInfoResponse getProfileInfo(String socialId);
+    BaseResponse changePhoneNumber(String socialId, String phoneNumber);
 }
