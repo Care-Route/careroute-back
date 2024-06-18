@@ -45,18 +45,18 @@ public class RoutineController {
         return routineService.getRoutines(principal.getName(), targetId, date);
     }
 
-    @Operation(summary = "일정 등록", description = "안내인이 안내대상의 일정을 등록하는 API")
-    @PostMapping
-    public BaseResponse saveRoutine(Principal principal,
-                                    @RequestBody RoutineSaveRequest request) {
-        return routineService.saveRoutine(principal.getName(), request);
-    }
-
     // 일정 상세 조회
     @GetMapping("/{routineId}")
     public RoutineResponse getRoutine(Principal principal,
                                       @PathVariable int routineId) {
         return routineService.getRoutine(principal.getName(), routineId);
+    }
+
+    @Operation(summary = "일정 등록", description = "안내인이 안내대상의 일정을 등록하는 API")
+    @PostMapping
+    public BaseResponse saveRoutine(Principal principal,
+                                    @RequestBody RoutineSaveRequest request) {
+        return routineService.saveRoutine(principal.getName(), request);
     }
 
     // 일정 삭제

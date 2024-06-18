@@ -14,9 +14,9 @@ public interface RoutineService {
 
     List<RoutineResponse> getRoutines(String name, int targetId, LocalDate date);
 
-    BaseResponse saveRoutine(String socialId, RoutineSaveRequest request);
-
     RoutineResponse getRoutine(String name, int routineId);
+
+    BaseResponse saveRoutine(String socialId, RoutineSaveRequest request);
 
     BaseResponse deleteRoutine(String name, int routineId);
 }
