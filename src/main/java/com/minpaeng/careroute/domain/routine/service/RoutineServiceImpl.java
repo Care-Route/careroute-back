@@ -12,6 +12,8 @@ import com.minpaeng.careroute.domain.routine.repository.entity.Destination;
 import com.minpaeng.careroute.domain.routine.repository.entity.Routine;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import com.minpaeng.careroute.global.exception.CustomException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +31,9 @@ public class RoutineServiceImpl implements RoutineService {
     private final MemberRepository memberRepository;
     private final ConnectionRepository connectionRepository;
     private final RoutineRepository routineRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public TargetInfoListResponse getTargetInfo(String socialId) {
@@ -59,8 +65,9 @@ public class RoutineServiceImpl implements RoutineService {
             throw getDestinationLimitException();
 
         Routine routine = makeRoutineForSaveRequest(guide, target, request);
-        routine.addDestinations(setDestinations(request, routine));
         routineRepository.save(routine);
+        List<Destination> destinations = setDestinations(request, routine);
+        saveDestinationsWithNativeQuery(destinations);
 
         return BaseResponse.builder()
                 .statusCode(200)
@@ -75,11 +82,14 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional
-    public BaseResponse deleteRoutine(String name, int routineId) {
-        // 올바른 사용자의 요청인지 확인하는 로직 추가 필요
-
-        routineRepository.findById(routineId)
+    public BaseResponse deleteRoutine(String socialId, int routineId) {
+        Routine routine = routineRepository.findByIdWithGuideAndTarget(routineId)
                 .orElseThrow(() -> getNotExistRoutine(routineId));
+
+        Member member = getMember(socialId);
+        if (routine.getGuide() != member && routine.getTarget() != member)
+            throw getInvalidRoutinOwnerException();
+
         routineRepository.deleteRoutineById(routineId);
         return BaseResponse.builder()
                 .statusCode(200)
@@ -123,6 +133,23 @@ public class RoutineServiceImpl implements RoutineService {
                 .toList();
     }
 
+    private void saveDestinationsWithNativeQuery(List<Destination> destinations) {
+        StringBuilder queryBuilder = new StringBuilder("INSERT INTO Destination (routine_id, name, destination_latitude, destination_longitude, time) VALUES ");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        for (Destination dest : destinations) {
+            queryBuilder.append("(")
+                    .append(dest.getRoutine().getId()).append(", '")
+                    .append(dest.getName().replace("'", "''")).append("', ")
+                    .append(dest.getDestinationLatitude()).append(", ")
+                    .append(dest.getDestinationLongitude()).append(", '")
+                    .append(dest.getTime().format(timeFormatter)).append("'), ");
+        }
+        String query = queryBuilder.substring(0, queryBuilder.length() - 2); // 마지막 콤마 제거
+
+        em.createNativeQuery(query).executeUpdate();
+    }
+
     private CustomException getNotExistMemberException() {
         return CustomException.builder()
                 .status(HttpStatus.BAD_REQUEST)
@@ -152,6 +179,14 @@ public class RoutineServiceImpl implements RoutineService {
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("아이디 " + routineId + "에 해당하는 일정 데이터가 존재하지 않습니다.")
+                .build();
+    }
+
+    private CustomException getInvalidRoutinOwnerException() {
+        return CustomException.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("일정 소유자가 아닙니다.")
                 .build();
     }
 }
