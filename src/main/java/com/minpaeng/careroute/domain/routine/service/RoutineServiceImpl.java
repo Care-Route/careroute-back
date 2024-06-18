@@ -3,7 +3,10 @@ package com.minpaeng.careroute.domain.routine.service;
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
 import com.minpaeng.careroute.domain.member.repository.entity.Member;
+import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import com.minpaeng.careroute.domain.routine.dto.request.RoutineSaveRequest;
+import com.minpaeng.careroute.domain.routine.dto.response.RoutineDetailResponse;
+import com.minpaeng.careroute.domain.routine.dto.response.RoutineListResponse;
 import com.minpaeng.careroute.domain.routine.dto.response.RoutineResponse;
 import com.minpaeng.careroute.domain.routine.dto.response.TargetInfoListResponse;
 import com.minpaeng.careroute.domain.routine.dto.response.TargetInfoResponse;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,7 +44,9 @@ public class RoutineServiceImpl implements RoutineService {
         Member member = memberRepository.findMemberBySocialIdWithConnections(socialId)
                 .orElseThrow(this::getNotExistMemberException);
 
-        List<TargetInfoResponse> response = member.getConnections().stream().map(c -> new TargetInfoResponse(c.getTarget())).toList();
+        List<TargetInfoResponse> response = member.getConnections().stream()
+                .map(c -> new TargetInfoResponse(c.getTarget())).toList();
+
         return TargetInfoListResponse.builder()
                 .statusCode(200)
                 .message("안내 대상 조회 완료")
@@ -49,8 +55,31 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public List<RoutineResponse> getRoutines(String name, int targetId, LocalDate date) {
-        return null;
+    public RoutineListResponse getRoutines(String socialId, int targetId, LocalDate date) {
+        Member member = getMember(socialId);
+        List<Routine> routines = getRoutinesByTargetId(member, targetId, date);
+        List<RoutineResponse> responses = routines.stream().map(RoutineResponse::new).toList();
+        return RoutineListResponse.builder()
+                .statusCode(200)
+                .message("일정 목록 조회 완료")
+                .routines(responses)
+                .build();
+    }
+
+    @Override
+    public RoutineDetailResponse getRoutine(String socialId, int routineId) {
+        Member member = getMember(socialId);
+        Routine routine = routineRepository.findByIdWithGuideAndTargetAndDestinations(routineId)
+                .orElseThrow(() -> getNotExistRoutine(routineId));
+
+        if (member != routine.getGuide() && member != routine.getTarget())
+            throw getInvalidRoutinOwnerException();
+
+        return RoutineDetailResponse.builder()
+                .statusCode(200)
+                .message("일정 상세 조회 완료")
+                .routine(new RoutineResponse(routine))
+                .build();
     }
 
     @Override
@@ -73,11 +102,6 @@ public class RoutineServiceImpl implements RoutineService {
                 .statusCode(200)
                 .message("일정 생성 완료")
                 .build();
-    }
-
-    @Override
-    public RoutineResponse getRoutine(String name, int routineId) {
-        return null;
     }
 
     @Override
@@ -107,7 +131,8 @@ public class RoutineServiceImpl implements RoutineService {
                 .orElseThrow(this::getNotExistMemberException);
     }
 
-    private Routine makeRoutineForSaveRequest(Member guide, Member target, RoutineSaveRequest request) {
+    private Routine makeRoutineForSaveRequest(Member guide, Member target,
+                                              RoutineSaveRequest request) {
         return Routine.builder()
                 .guide(guide)
                 .target(target)
@@ -131,6 +156,21 @@ public class RoutineServiceImpl implements RoutineService {
                         .time(d.getTime())
                         .build())
                 .toList();
+    }
+
+    private List<Routine> getRoutinesByTargetId(Member member, int targetId, LocalDate date) {
+        if (member.getRole() == MemberRole.GUIDE) {
+            Member target = getMember(targetId);
+            if (connectionRepository.findByGuideAndTarget(member, target).isEmpty())
+                throw getInvalidConnectionException();
+            return routineRepository
+                    .findByMemberAndDateWithGuideAndTargetAndDestinations(target, date);
+        } else if (member.getRole() == MemberRole.TARGET) {
+            return routineRepository
+                    .findByMemberAndDateWithGuideAndTargetAndDestinations(member, date);
+        }
+        log.info("사용자 유형 미선택 상태로 일정 조회 시도");
+        return new ArrayList<>();
     }
 
     private void saveDestinationsWithNativeQuery(List<Destination> destinations) {
@@ -187,6 +227,14 @@ public class RoutineServiceImpl implements RoutineService {
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("일정 소유자가 아닙니다.")
+                .build();
+    }
+
+    private CustomException getInvalidConnectionException() {
+        return CustomException.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("안내인-안내대상 관계가 아닙니다.")
                 .build();
     }
 }
