@@ -57,7 +57,7 @@ public class Routine {
     @Column(nullable = false)
     private double startLongitude;
 
-    @OneToMany(mappedBy = "routine", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "routine", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Destination> destinations = new ArrayList<>();
 
     @Column(nullable = false)
