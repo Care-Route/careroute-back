@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -22,32 +21,30 @@ public class MessageService {
     @Value("${coolsms.fromnumber}")
     private String fromNumber;
 
-    private String createRandomNumber() {
-        Random rand = new Random();
-        StringBuilder randomNum = new StringBuilder();
-        for (int i = 0; i < 4; i++) {
-            String random = Integer.toString(rand.nextInt(10));
-            randomNum.append(random);
-        }
-
-        return randomNum.toString();
-    }
-
-    private HashMap<String, String> makeParams(String to, String randomNum) {
+    private HashMap<String, String> makeParams(String to, String message) {
         HashMap<String, String> params = new HashMap<>();
         params.put("from", fromNumber);
         params.put("type", "SMS");
         params.put("app_version", "test app 1.2");
         params.put("to", to);
-        params.put("text", randomNum);
+        params.put("text", message);
         return params;
     }
 
-    public void sendSMS(String phonNumber) {
+    public void sendSMSForAuth(String phonNumber, String randomNum) {
         Message coolsms = new Message(apiKey, apiSecret);
-        String randomNum = createRandomNumber();
-        HashMap<String, String> params = makeParams(phonNumber, randomNum);
+        String message = "Careroute 전화번호 인증 코드: " + randomNum;
+        sendMessage(phonNumber, coolsms, message);
+    }
 
+    public void sendSMSForConnection(String phonNumber) {
+        Message coolsms = new Message(apiKey, apiSecret);
+        String message = "Careroute 기기연결 요청 알림 메세지입니다. 앱 설치 및 가입 후 기기 연결을 진행해주세요.";
+        sendMessage(phonNumber, coolsms, message);
+    }
+
+    private void sendMessage(String phonNumber, Message coolsms, String message) {
+        HashMap<String, String> params = makeParams(phonNumber, message);
         try {
             JSONObject obj = coolsms.send(params);
             log.info(obj.toString());

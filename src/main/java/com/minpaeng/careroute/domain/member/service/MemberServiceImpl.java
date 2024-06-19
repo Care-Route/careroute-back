@@ -1,8 +1,10 @@
 package com.minpaeng.careroute.domain.member.service;
 
 import com.minpaeng.careroute.domain.member.dto.ConnectionDto;
+import com.minpaeng.careroute.domain.member.dto.PhoneAuthDto;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionCodeRequest;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionRequest;
+import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
@@ -12,17 +14,21 @@ import com.minpaeng.careroute.domain.member.repository.entity.Member;
 import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import com.minpaeng.careroute.domain.member.repository.entity.enums.SocialType;
 import com.minpaeng.careroute.domain.member.repository.redis.ConnectionAuthRepository;
+import com.minpaeng.careroute.domain.member.repository.redis.PhoneAuthRepository;
 import com.minpaeng.careroute.domain.member.security.OIDCDecodePayload;
 import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import com.minpaeng.careroute.global.dto.BaseResponse;
+import com.minpaeng.careroute.global.event.SMSAuthEvent;
 import com.minpaeng.careroute.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -30,8 +36,11 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final OauthOIDCHelper oauthOIDCHelper;
     private final MemberRepository memberRepository;
+    private final PhoneAuthRepository phoneAuthRepository;
     private final ConnectionRepository connectionRepository;
     private final ConnectionAuthRepository connectionAuthRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -55,6 +64,47 @@ public class MemberServiceImpl implements MemberService {
                 .message("로그인 완료")
                 .memberId(member.getId())
                 .type(member.getRole())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public BaseResponse sendAuthCode(String socialId, String phoneNumber) {
+        Member member = getMemger(socialId);
+        String randomNumber = createRandomNumber();
+        PhoneAuthDto phoneAuthDto = PhoneAuthDto.builder()
+                .memberId(member.getId())
+                .phoneNumber(phoneNumber)
+                .code(randomNumber)
+                .build();
+        if (phoneAuthRepository.existsByMemberId(member.getId()))
+            phoneAuthRepository.deleteByMemberId(member.getId());
+        phoneAuthRepository.save(phoneAuthDto);
+
+        eventPublisher.publishEvent(new SMSAuthEvent(phoneNumber, randomNumber));
+        return BaseResponse.builder()
+                .statusCode(200)
+                .message("인증 코드 발송 완료: : 3분 유지")
+                .build();
+    }
+
+    @Override
+    public BaseResponse makeInitialInfo(String socialId, InitialMemberInfoRequest request) {
+        Member member = getMemger(socialId);
+        PhoneAuthDto phoneAuthDto = phoneAuthRepository.findByMemberId(member.getId())
+                .orElseThrow(this::getNotExistPhoneAuthException);
+
+        if (!phoneAuthDto.getCode().equals(request.getAuthCode()))
+            throw getInvalidPhoneAuthCodeException(
+                    phoneAuthDto.getCode(),
+                    request.getAuthCode()
+            );
+        phoneAuthRepository.delete(phoneAuthDto);
+
+        member.setInitialInfo(request.getPhoneNumber(), request.getNickname());
+        return BaseResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("인증번호 일치: 전화번호 및 닉네임 설정 완료")
                 .build();
     }
 
@@ -175,5 +225,33 @@ public class MemberServiceImpl implements MemberService {
     private Member getMemger(String socialId) {
         return memberRepository.findMemberBySocialId(socialId)
                 .orElseThrow(() -> new IllegalStateException("해당하는 사용자가 존재하지 않습니다."));
+    }
+
+    private String createRandomNumber() {
+        Random rand = new Random();
+        StringBuilder randomNum = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            String random = Integer.toString(rand.nextInt(10));
+            randomNum.append(random);
+        }
+
+        return randomNum.toString();
+    }
+
+    private CustomException getNotExistPhoneAuthException() {
+        throw CustomException.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("휴대전화 인증 코드가 없습니다.")
+                .build();
+    }
+
+    private CustomException getInvalidPhoneAuthCodeException(String savedCode, String requestedCode) {
+        log.error("전화번호 인증코드 불일치: " + savedCode + " / " + requestedCode);
+        throw CustomException.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("휴대전화 인증 코드가 일치하지 않습니다.")
+                .build();
     }
 }

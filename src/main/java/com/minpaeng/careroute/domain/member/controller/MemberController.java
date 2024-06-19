@@ -2,7 +2,9 @@ package com.minpaeng.careroute.domain.member.controller;
 
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionCodeRequest;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionRequest;
+import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
+import com.minpaeng.careroute.domain.member.dto.request.SendAuthRequest;
 import com.minpaeng.careroute.domain.member.dto.request.TypeSaveRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.service.MemberService;
@@ -31,6 +33,19 @@ public class MemberController {
     @PostMapping("/login")
     public MemberJoinResponse login(@RequestBody MemberJoinRequest request) {
         return memberService.login(request);
+    }
+
+    @Operation(summary = "전화번호 인증 번호 발송", description = "인증 번호 발송 API")
+    @PostMapping("/auth")
+    public BaseResponse sendAuthCode(Principal principal, @RequestBody SendAuthRequest request) {
+        return memberService.sendAuthCode(principal.getName(), request.getPhoneNumber());
+    }
+
+    @Operation(summary = "전화번호 및 닉네임 설정", description = "인증 번호 검증 후 전화번호와 닉네임을 설정하는 API")
+    @PostMapping("/account")
+    public BaseResponse makeInitialInfo(Principal principal,
+                                        @RequestBody InitialMemberInfoRequest request) {
+        return memberService.makeInitialInfo(principal.getName(), request);
     }
 
     @Operation(summary = "사용자 타입 지정", description = "GUIDE(안내인), TARGET(안내 대상)으로 사용자 유형을 지정하는 API")

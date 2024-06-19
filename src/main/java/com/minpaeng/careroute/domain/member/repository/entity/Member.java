@@ -77,6 +77,11 @@ public class Member {
         this.phoneNumber = phoneNumber;
     }
 
+    public void setInitialInfo(String phoneNumber, String nickname) {
+        this.phoneNumber = phoneNumber;
+        this.nickname = nickname;
+    }
+
     @Builder
     public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {
         this.socialType = socialType;

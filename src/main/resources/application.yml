@@ -37,9 +37,9 @@ springdoc:
     path: /api/swagger-ui.html
 
 coolsms:
-  apikey: {COOL_API_KEY}
-  apisecret: {COOL_API_SECRET}
-  fromnumber: {COOL_FROMNUMBER}
+  apikey: ${COOL_API_KEY}
+  apisecret: ${COOL_API_SECRET}
+  fromnumber: ${COOL_FROMNUMBER}
 
 ---
 
