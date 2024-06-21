@@ -89,4 +89,10 @@ public class Member {
         this.nickname = nickname;
         this.role = role;
     }
+
+    public Member(int memberId, String nickname, String profileImagePath) {
+        this.id = memberId;
+        this.nickname = nickname;
+        this.profileImagePath = profileImagePath;
+    }
 }

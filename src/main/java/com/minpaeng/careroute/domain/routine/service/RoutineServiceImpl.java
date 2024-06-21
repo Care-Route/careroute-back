@@ -41,11 +41,20 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public TargetInfoListResponse getTargetInfo(String socialId) {
-        Member member = memberRepository.findMemberBySocialIdWithConnections(socialId)
-                .orElseThrow(this::getNotExistMemberException);
+        List<Object[]> results = memberRepository.findMemberBySocialIdWithConnections(socialId);
+        if (results.isEmpty()) {
+            throw getNotExistMemberException();
+        }
 
-        List<TargetInfoResponse> response = member.getConnections().stream()
-                .map(c -> new TargetInfoResponse(c.getTarget())).toList();
+        List<Member> targets = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Member target = new Member((Integer) result[0], (String) result[1], (String) result[2]);
+            targets.add(target);
+        }
+
+        List<TargetInfoResponse> response = targets.stream()
+                .map(TargetInfoResponse::new).toList();
 
         return TargetInfoListResponse.builder()
                 .statusCode(200)
