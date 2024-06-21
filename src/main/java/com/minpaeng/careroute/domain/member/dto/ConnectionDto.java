@@ -17,8 +17,7 @@ public class ConnectionDto {
     @Id
     private String id;
     @Indexed
-    private String toNumber;
+    private int guideId;
     @Indexed
-    private String fromNumber;
-    private String code;
+    private int targetId;
 }

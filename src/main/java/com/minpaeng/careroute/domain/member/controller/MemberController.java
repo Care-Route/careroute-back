@@ -1,7 +1,7 @@
 package com.minpaeng.careroute.domain.member.controller;
 
-import com.minpaeng.careroute.domain.member.dto.request.ConnectionCodeRequest;
-import com.minpaeng.careroute.domain.member.dto.request.ConnectionRequest;
+import com.minpaeng.careroute.domain.member.dto.request.ConnectDeviceRequest;
+import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalRequest;
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.request.SendAuthRequest;
@@ -57,17 +57,31 @@ public class MemberController {
         return memberService.selectType(idToken, principal.getName(), request.getType());
     }
 
-    @Operation(summary = "인증코드 전송", description = "기기 연결을 위한 인증코드 전송 API")
-    @PostMapping("/connection/code")
-    public BaseResponse generateConnection(Principal principal,
-                                           @RequestBody ConnectionCodeRequest request) {
-        return memberService.connectCode(principal.getName(), request);
+//    @Operation(summary = "기기연결 요청", description = "기기 연결 요청 전송 API")
+//    @PostMapping("/connection/code")
+//    public BaseResponse connectCode(Principal principal,
+//                                           @RequestBody ConnectionCodeRequest request) {
+//        return memberService.connectCode(principal.getName(), request);
+//    }
+//
+//    @Operation(summary = "기기 연결", description = "인증코드 확인 및 연결 수립 API")
+//    @PostMapping("/connection")
+//    public BaseResponse connectDevice(Principal principal,
+//                                      @RequestBody ConnectionRequest request) {
+//        return memberService.connectDevice(principal.getName(), request);
+//    }
+
+    @Operation(summary = "기기 연결 요청", description = "기기 연결 요청 API")
+    @PostMapping("/connection/proposal")
+    public BaseResponse connectionProposal(Principal principal,
+                                           @RequestBody ConnectionProposalRequest request) {
+        return memberService.makeConnectionProposal(principal.getName(), request);
     }
 
-    @Operation(summary = "기기 연결", description = "인증코드 확인 및 연결 수립 API")
+    @Operation(summary = "기기 연결 요청 수락", description = "기기 연결 요청 수락 API")
     @PostMapping("/connection")
     public BaseResponse connectDevice(Principal principal,
-                                      @RequestBody ConnectionRequest request) {
-        return memberService.connectDevice(principal.getName(), request);
+                                       @RequestBody ConnectDeviceRequest request) {
+        return memberService.makeConnection(principal.getName(), request.getMemberId());
     }
 }

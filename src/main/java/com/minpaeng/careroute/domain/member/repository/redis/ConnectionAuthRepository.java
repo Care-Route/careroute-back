@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface ConnectionAuthRepository extends CrudRepository<ConnectionDto, String> {
-    Optional<ConnectionDto> findByFromNumberAndToNumber(String fromNumber, String toNumber);
+    Optional<ConnectionDto> findByGuideIdAndTargetId(int guideId, int targetId);
 }
