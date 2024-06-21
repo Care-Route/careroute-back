@@ -28,6 +28,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     @Transactional
     @Override
     public BookmarkSaveResponse saveSpotBookmark(String socialId, BookmarkSaveRequest request) {
+        log.info("즐겨찾기 등록 요청: " + request);
         Member member = getMemberBySocialId(socialId);
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
         if (!bookmarks.isEmpty() && bookmarks.size() >= 5) {
