@@ -76,8 +76,8 @@ public class MemberController {
 //        return memberService.connectDevice(principal.getName(), request);
 //    }
 
-    @Operation(summary = "전화번호로 사용자 검색", description = "전화번호로 사용자를 검색하는 API")
-    @PostMapping
+    @Operation(summary = "전화번호로 사용자 타입 검색", description = "전화번호로 사용자 타입을 조회하는 API")
+    @PostMapping("/search/type")
     public MemberRoleResponse getMemberRoleByPhoneNumber(@RequestBody SearchUserRequest request) {
         return memberService.getMemberRoleByPhoneNumber(request.getPhoneNumber());
     }
