@@ -15,5 +15,8 @@ public class MemberJoinResponse {
     private int statusCode;
     private String message;
     private int memberId;
+    private String nickname;
     private MemberRole type;
+    private String phoneNumber;
+    private String imageUrl;
 }

@@ -6,6 +6,7 @@ import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalReques
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
+import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
 import com.minpaeng.careroute.domain.member.repository.entity.Connection;
@@ -62,7 +63,10 @@ public class MemberServiceImpl implements MemberService {
                 .statusCode(200)
                 .message("로그인 완료")
                 .memberId(member.getId())
+                .nickname(member.getNickname())
                 .type(member.getRole())
+                .phoneNumber(member.getPhoneNumber())
+                .imageUrl(member.getProfileImagePath())
                 .build();
     }
 
@@ -235,6 +239,14 @@ public class MemberServiceImpl implements MemberService {
                 .statusCode(200)
                 .message("연결 생성 완료")
                 .build();
+    }
+
+    @Override
+    public MemberRoleResponse getMemberRoleByPhoneNumber(String phoneNumber) {
+        Member member = memberRepository.findMemberByPhoneNumber(phoneNumber)
+                .orElseThrow(this::getNotExistMember);
+
+        return new MemberRoleResponse(member.getRole());
     }
 
 //    @Override

@@ -4,9 +4,11 @@ import com.minpaeng.careroute.domain.member.dto.request.ConnectDeviceRequest;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalRequest;
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
+import com.minpaeng.careroute.domain.member.dto.request.SearchUserRequest;
 import com.minpaeng.careroute.domain.member.dto.request.SendAuthRequest;
 import com.minpaeng.careroute.domain.member.dto.request.TypeSaveRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
+import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.domain.member.service.MemberService;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +32,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final SimpMessagingTemplate template;
 
     @Operation(summary = "카카오(혹은 구글)로 로그인 및 회원가입", description = "카카오(혹은 구글)로 로그인 및 회원가입 하는 API")
     @PostMapping("/login")
@@ -71,8 +76,15 @@ public class MemberController {
 //        return memberService.connectDevice(principal.getName(), request);
 //    }
 
+    @Operation(summary = "전화번호로 사용자 검색", description = "전화번호로 사용자를 검색하는 API")
+    @PostMapping
+    public MemberRoleResponse getMemberRoleByPhoneNumber(@RequestBody SearchUserRequest request) {
+        return memberService.getMemberRoleByPhoneNumber(request.getPhoneNumber());
+    }
+
+
     @Operation(summary = "기기 연결 요청", description = "기기 연결 요청 API")
-    @PostMapping("/connection/proposal")
+    @MessageMapping(value = "/connection/proposal")
     public BaseResponse connectionProposal(Principal principal,
                                            @RequestBody ConnectionProposalRequest request) {
         return memberService.makeConnectionProposal(principal.getName(), request);

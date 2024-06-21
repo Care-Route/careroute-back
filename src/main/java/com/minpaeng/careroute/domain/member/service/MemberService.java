@@ -4,6 +4,7 @@ import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalReques
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
+import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.global.dto.BaseResponse;
 import org.springframework.stereotype.Service;
 
@@ -20,4 +21,6 @@ public interface MemberService {
     BaseResponse makeConnectionProposal(String socialId, ConnectionProposalRequest request);
 
     BaseResponse makeConnection(String idToken, int memberId);
+
+    MemberRoleResponse getMemberRoleByPhoneNumber(String phoneNumber);
 }
