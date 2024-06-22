@@ -3,6 +3,7 @@ package com.minpaeng.careroute.domain.member.service;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalRequest;
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
+import com.minpaeng.careroute.domain.member.dto.response.ConnectionProposalResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.global.dto.BaseResponse;

@@ -16,8 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +30,6 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final SimpMessagingTemplate template;
 
     @Operation(summary = "카카오(혹은 구글)로 로그인 및 회원가입", description = "카카오(혹은 구글)로 로그인 및 회원가입 하는 API")
     @PostMapping("/login")
@@ -62,20 +59,6 @@ public class MemberController {
         return memberService.selectType(idToken, principal.getName(), request.getType());
     }
 
-//    @Operation(summary = "기기연결 요청", description = "기기 연결 요청 전송 API")
-//    @PostMapping("/connection/code")
-//    public BaseResponse connectCode(Principal principal,
-//                                           @RequestBody ConnectionCodeRequest request) {
-//        return memberService.connectCode(principal.getName(), request);
-//    }
-//
-//    @Operation(summary = "기기 연결", description = "인증코드 확인 및 연결 수립 API")
-//    @PostMapping("/connection")
-//    public BaseResponse connectDevice(Principal principal,
-//                                      @RequestBody ConnectionRequest request) {
-//        return memberService.connectDevice(principal.getName(), request);
-//    }
-
     @Operation(summary = "전화번호로 사용자 타입 검색", description = "전화번호로 사용자 타입을 조회하는 API")
     @PostMapping("/search/type")
     public MemberRoleResponse getMemberRoleByPhoneNumber(@RequestBody SearchUserRequest request) {
@@ -84,9 +67,9 @@ public class MemberController {
 
 
     @Operation(summary = "기기 연결 요청", description = "기기 연결 요청 API")
-    @MessageMapping(value = "/connection/proposal")
+    @PostMapping(value = "/connection/proposal")
     public BaseResponse connectionProposal(Principal principal,
-                                           @RequestBody ConnectionProposalRequest request) {
+                                                         @RequestBody ConnectionProposalRequest request) {
         return memberService.makeConnectionProposal(principal.getName(), request);
     }
 

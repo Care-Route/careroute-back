@@ -5,6 +5,7 @@ import com.minpaeng.careroute.domain.member.dto.PhoneAuthDto;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalRequest;
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
+import com.minpaeng.careroute.domain.member.dto.response.ConnectionProposalResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
@@ -24,9 +25,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -41,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final ConnectionAuthRepository connectionAuthRepository;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final SimpMessagingTemplate template;
 
     @Transactional
     @Override
@@ -160,22 +164,40 @@ public class MemberServiceImpl implements MemberService {
 
         ConnectionDto connectionDto;
         if (member1.getRole() == MemberRole.GUIDE && member2.getRole() == MemberRole.TARGET) {
+            Optional<ConnectionDto> dto = connectionAuthRepository
+            .findByGuideIdAndTargetId(member1.getId(), member2.getId());
+            dto.ifPresent(connectionAuthRepository::delete);
             connectionDto = ConnectionDto.builder()
                     .guideId(member1.getId())
                     .targetId(member2.getId())
                     .build();
         } else if (member1.getRole() == MemberRole.TARGET && member2.getRole() == MemberRole.GUIDE) {
+            Optional<ConnectionDto> dto = connectionAuthRepository
+                    .findByGuideIdAndTargetId(member2.getId(), member1.getId());
+            dto.ifPresent(connectionAuthRepository::delete);
             connectionDto = ConnectionDto.builder()
                     .guideId(member2.getId())
                     .targetId(member1.getId())
                     .build();
         } else {
+            Optional<ConnectionDto> dto = connectionAuthRepository
+                    .findByGuideIdAndTargetId(member1.getId(), member2.getId());
+            dto.ifPresent(connectionAuthRepository::delete);
             connectionDto = ConnectionDto.builder()
                     .guideId(member1.getId())
                     .targetId(member2.getId())
                     .build();
         }
+
         connectionAuthRepository.save(connectionDto);
+        log.info("기기 연결 요청 시작");
+        Map<String, Object> headers = Map.of("success", true, "type", "connectionProposal");
+        ConnectionProposalResponse response = ConnectionProposalResponse.builder()
+                .member(member1)
+                .build();
+        template.convertAndSend("/sub/" + member1.getId(), response, headers);
+        log.info("기기 연결 요청 종료: ");
+
         return BaseResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("기기 연결 요청 성공: 10분 유지")
@@ -366,7 +388,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private CustomException getNotExistPhoneAuthException() {
-        throw CustomException.builder()
+        return CustomException.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("휴대전화 인증 코드가 없습니다.")
@@ -375,7 +397,7 @@ public class MemberServiceImpl implements MemberService {
 
     private CustomException getInvalidPhoneAuthCodeException(String savedCode, String requestedCode) {
         log.error("전화번호 인증코드 불일치: " + savedCode + " / " + requestedCode);
-        throw CustomException.builder()
+        return CustomException.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("휴대전화 인증 코드가 일치하지 않습니다.")
@@ -383,7 +405,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private CustomException getEmptyRoleException() {
-        throw CustomException.builder()
+        return CustomException.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("사용자 유형이 선택되지 않았습니다.")
