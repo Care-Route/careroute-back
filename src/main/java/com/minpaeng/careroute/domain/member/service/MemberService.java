@@ -21,7 +21,9 @@ public interface MemberService {
 
     BaseResponse makeConnectionProposal(String socialId, ConnectionProposalRequest request);
 
-    BaseResponse makeConnection(String idToken, int memberId);
+    BaseResponse makeConnection(String socialId, int memberId);
 
     MemberRoleResponse getMemberRoleByPhoneNumber(String phoneNumber);
+
+    BaseResponse deleteConnection(String socialId, int targetId);
 }

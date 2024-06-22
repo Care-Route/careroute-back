@@ -205,6 +205,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public BaseResponse makeConnection(String socialId, int memberId) {
         Member to = getMember(socialId);
         Member from = getMember(memberId);
@@ -260,6 +261,22 @@ public class MemberServiceImpl implements MemberService {
         return BaseResponse.builder()
                 .statusCode(200)
                 .message("연결 생성 완료")
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public BaseResponse deleteConnection(String socialId, int memberId) {
+        Member member1 = getMember(socialId);
+        Member member2 = getMember(memberId);
+        if (member1.getRole() == MemberRole.GUIDE) {
+            connectionRepository.deleteByGuideAndTarget(member1, member2);
+        } else if (member1.getRole() == MemberRole.TARGET) {
+            connectionRepository.deleteByGuideAndTarget(member2, member1);
+        }
+        return BaseResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("연결 삭제 완료")
                 .build();
     }
 

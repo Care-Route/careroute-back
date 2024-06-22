@@ -16,9 +16,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -78,5 +80,11 @@ public class MemberController {
     public BaseResponse connectDevice(Principal principal,
                                        @RequestBody ConnectDeviceRequest request) {
         return memberService.makeConnection(principal.getName(), request.getMemberId());
+    }
+
+    @Operation(summary = "기기 연결 제거", description = "기기 연결 삭제 API")
+    @DeleteMapping("/connection")
+    public BaseResponse deleteConnection(Principal principal, @RequestParam int targetId) {
+        return memberService.deleteConnection(principal.getName(), targetId);
     }
 }

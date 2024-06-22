@@ -15,4 +15,6 @@ public interface ConnectionRepository extends CrudRepository<Connection, Integer
 
     @Query("select c from Connection c join fetch c.target where c.guide = :guide")
     List<Connection> findByGuideWithTarget(Member guide);
+
+    void deleteByGuideAndTarget(Member guide, Member target);
 }
