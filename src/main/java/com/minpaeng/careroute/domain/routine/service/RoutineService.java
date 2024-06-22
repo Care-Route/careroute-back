@@ -12,7 +12,7 @@ import java.util.List;
 public interface RoutineService {
     TargetInfoListResponse getTargetInfo(String socialId);
 
-    RoutineListResponse getRoutines(String name, int targetId, LocalDate date);
+    RoutineListResponse getRoutines(String name);
 
     RoutineDetailResponse getRoutine(String name, int routineId);
 

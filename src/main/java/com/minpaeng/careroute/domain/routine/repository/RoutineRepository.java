@@ -27,8 +27,19 @@ public interface RoutineRepository extends CrudRepository<Routine, Integer> {
     List<Routine> findByMemberAndDateWithGuideAndTargetAndDestinations(@Param("member") Member member,
                                                                        @Param("date") LocalDate date);
 
+    @Query("select r from Routine  r " +
+            "join fetch r.guide join fetch r.target left join fetch r.destinations " +
+            "where r.target = :member")
+    List<Routine> findByMemberWithGuideAndTargetAndDestinations(@Param("member") Member member);
+
     @Query("select r from Routine r " +
-            "join fetch r.guide join r.target join fetch r.destinations " +
+            "join fetch r.guide join fetch r.target join fetch r.destinations " +
             "where r.id = :routineId")
     Optional<Routine> findByIdWithGuideAndTargetAndDestinations(@Param("routineId") int routineId);
+
+    @Query("select r from Routine r " +
+            "join fetch r.guide join fetch r.target join fetch r.destinations " +
+            "where r.guide = :guide and r.target in :targets")
+    List<Routine> findByMemberIdsWithGuideAndTargetAndDestinations(@Param("guide") Member guide,
+                                                     @Param("targetIds") List<Member> targets);
 }

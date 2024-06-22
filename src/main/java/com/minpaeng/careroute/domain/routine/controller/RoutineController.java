@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.time.LocalDate;
 
 @Tag(name = "Routine", description = "일정 관리 API")
 @Slf4j
@@ -37,12 +35,10 @@ public class RoutineController {
         return routineService.getTargetInfo(principal.getName());
     }
 
-    @Operation(summary = "일정 목록 조회", description = "날짜별 일정 목록 조회 API")
+    @Operation(summary = "일정 목록 조회", description = "일정 목록 조회 API")
     @GetMapping
-    public RoutineListResponse getRoutines(Principal principal,
-                                           @RequestParam int targetId,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        return routineService.getRoutines(principal.getName(), targetId, date);
+    public RoutineListResponse getRoutines(Principal principal) {
+        return routineService.getRoutines(principal.getName());
     }
 
     @Operation(summary = "일정 상세 조회", description = "일정 상세 조회 API")

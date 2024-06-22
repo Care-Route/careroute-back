@@ -2,6 +2,7 @@ package com.minpaeng.careroute.domain.routine.service;
 
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
 import com.minpaeng.careroute.domain.member.repository.MemberRepository;
+import com.minpaeng.careroute.domain.member.repository.entity.Connection;
 import com.minpaeng.careroute.domain.member.repository.entity.Member;
 import com.minpaeng.careroute.domain.member.repository.entity.enums.MemberRole;
 import com.minpaeng.careroute.domain.routine.dto.request.RoutineSaveRequest;
@@ -64,9 +65,9 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public RoutineListResponse getRoutines(String socialId, int targetId, LocalDate date) {
+    public RoutineListResponse getRoutines(String socialId) {
         Member member = getMember(socialId);
-        List<Routine> routines = getRoutinesByTargetId(member, targetId, date);
+        List<Routine> routines = getRoutinesOfTargets(member);
         List<RoutineResponse> responses = routines.stream().map(RoutineResponse::new).toList();
         return RoutineListResponse.builder()
                 .statusCode(200)
@@ -167,16 +168,15 @@ public class RoutineServiceImpl implements RoutineService {
                 .toList();
     }
 
-    private List<Routine> getRoutinesByTargetId(Member member, int targetId, LocalDate date) {
+    private List<Routine> getRoutinesOfTargets(Member member) {
         if (member.getRole() == MemberRole.GUIDE) {
-            Member target = getMember(targetId);
-            if (connectionRepository.findByGuideAndTarget(member, target).isEmpty())
-                throw getInvalidConnectionException();
+            List<Member> targets = connectionRepository.findByGuideWithTarget(member)
+                    .stream().map(Connection::getTarget).toList();
             return routineRepository
-                    .findByMemberAndDateWithGuideAndTargetAndDestinations(target, date);
+                    .findByMemberIdsWithGuideAndTargetAndDestinations(member, targets);
         } else if (member.getRole() == MemberRole.TARGET) {
             return routineRepository
-                    .findByMemberAndDateWithGuideAndTargetAndDestinations(member, date);
+                    .findByMemberWithGuideAndTargetAndDestinations(member);
         }
         log.info("사용자 유형 미선택 상태로 일정 조회 시도");
         return new ArrayList<>();
