@@ -12,12 +12,13 @@ import org.springframework.data.redis.core.index.Indexed;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "connection", timeToLive = 600)
-public class ConnectionDto {
+@RedisHash(value = "phoneAuth", timeToLive = 180)
+public class PhoneAuthDto {
     @Id
     private String id;
     @Indexed
-    private int guideId;
+    private int memberId;
     @Indexed
-    private int targetId;
+    private String phoneNumber;
+    private String code;
 }

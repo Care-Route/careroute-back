@@ -34,7 +34,7 @@ public class SecurityConfig {
     }
 
     // 스프링 시큐리티 기능 비활성화 (H2 DB 접근을 위해)
-//	@Bean
+	@Bean
 //	public WebSecurityCustomizer configure() {
 //		return (web -> web.ignoring()
 //				.requestMatchers(toH2Console())
@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/swagger-ui/**", "/swagger-ui/**", "/api/swagger-ui.html/**", "/v3/api-docs/**")
                         .permitAll()
-                        .requestMatchers("/api/members/login")
+                        .requestMatchers("/api/members/login", "/ws/**")
                         .permitAll()
                         .requestMatchers("/api/routine/targets")
                         .hasRole("GUIDE")

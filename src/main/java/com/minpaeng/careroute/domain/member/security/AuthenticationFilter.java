@@ -31,6 +31,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getServletPath().equals("/api/members/login");
+        return request.getServletPath().equals("/api/members/login") || request.getServletPath().contains("/ws");
     }
 }

@@ -77,11 +77,22 @@ public class Member {
         this.phoneNumber = phoneNumber;
     }
 
+    public void setInitialInfo(String phoneNumber, String nickname) {
+        this.phoneNumber = phoneNumber;
+        this.nickname = nickname;
+    }
+
     @Builder
     public Member(SocialType socialType, String socialId, String nickname, MemberRole role) {
         this.socialType = socialType;
         this.socialId = socialId;
         this.nickname = nickname;
         this.role = role;
+    }
+
+    public Member(int memberId, String nickname, String profileImagePath) {
+        this.id = memberId;
+        this.nickname = nickname;
+        this.profileImagePath = profileImagePath;
     }
 }
