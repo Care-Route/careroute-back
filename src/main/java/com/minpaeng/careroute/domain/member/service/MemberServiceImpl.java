@@ -164,25 +164,19 @@ public class MemberServiceImpl implements MemberService {
 
         ConnectionDto connectionDto;
         if (member1.getRole() == MemberRole.GUIDE && member2.getRole() == MemberRole.TARGET) {
-            Optional<ConnectionDto> dto = connectionAuthRepository
-            .findByGuideIdAndTargetId(member1.getId(), member2.getId());
-            dto.ifPresent(connectionAuthRepository::delete);
+            connectionAuthRepository.deleteByGuideIdAndTargetId(member1.getId(), member2.getId());
             connectionDto = ConnectionDto.builder()
                     .guideId(member1.getId())
                     .targetId(member2.getId())
                     .build();
         } else if (member1.getRole() == MemberRole.TARGET && member2.getRole() == MemberRole.GUIDE) {
-            Optional<ConnectionDto> dto = connectionAuthRepository
-                    .findByGuideIdAndTargetId(member2.getId(), member1.getId());
-            dto.ifPresent(connectionAuthRepository::delete);
+            connectionAuthRepository.deleteByGuideIdAndTargetId(member2.getId(), member1.getId());
             connectionDto = ConnectionDto.builder()
                     .guideId(member2.getId())
                     .targetId(member1.getId())
                     .build();
         } else {
-            Optional<ConnectionDto> dto = connectionAuthRepository
-                    .findByGuideIdAndTargetId(member1.getId(), member2.getId());
-            dto.ifPresent(connectionAuthRepository::delete);
+            connectionAuthRepository.deleteByGuideIdAndTargetId(member1.getId(), member2.getId());
             connectionDto = ConnectionDto.builder()
                     .guideId(member1.getId())
                     .targetId(member2.getId())

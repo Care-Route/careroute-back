@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ConnectionAuthRepository extends CrudRepository<ConnectionDto, String> {
     Optional<ConnectionDto> findByGuideIdAndTargetId(int guideId, int targetId);
+
+    void deleteByGuideIdAndTargetId(int guideId, int targetId);
 }
