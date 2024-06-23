@@ -11,6 +11,7 @@ public class ProfileInfoResponse {
     private final MemberRole role;
     private final String address;
     private final String profileImage;
+    private final String phoneNumber;
 
     public ProfileInfoResponse(Member member) {
         this.memberId = member.getId();
@@ -18,5 +19,6 @@ public class ProfileInfoResponse {
         this.role = member.getRole();
         this.address = member.getAddress();
         this.profileImage = member.getProfileImagePath();
+        this.phoneNumber = member.getPhoneNumber();
     }
 }
