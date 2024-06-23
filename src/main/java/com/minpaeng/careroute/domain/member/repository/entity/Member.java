@@ -54,6 +54,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Column
+    private String fcmToken;
+
     @OneToMany(mappedBy = "target", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Connection> connections = new ArrayList<>();
 

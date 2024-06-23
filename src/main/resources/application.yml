@@ -41,6 +41,10 @@ coolsms:
   apisecret: ${COOL_API_SECRET}
   fromnumber: ${COOL_FROMNUMBER}
 
+firebase:
+  sdk:
+    path: ${FIREBASE_KEY_PATH}
+
 ---
 
 spring:
