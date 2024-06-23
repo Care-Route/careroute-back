@@ -183,7 +183,7 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     private void saveDestinationsWithNativeQuery(List<Destination> destinations) {
-        StringBuilder queryBuilder = new StringBuilder("INSERT INTO Destination (routine_id, name, destination_latitude, destination_longitude, time) VALUES ");
+        StringBuilder queryBuilder = new StringBuilder("INSERT INTO destination (routine_id, name, destination_latitude, destination_longitude, time) VALUES ");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         for (Destination dest : destinations) {
