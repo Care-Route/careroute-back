@@ -98,6 +98,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public BaseResponse makeInitialInfo(String socialId, InitialMemberInfoRequest request) {
+        log.info("이니셜 인포 요청: " + request);
         Member member = getMember(socialId);
         PhoneAuthDto phoneAuthDto = phoneAuthRepository.findByMemberId(member.getId())
                 .orElseThrow(this::getNotExistPhoneAuthException);

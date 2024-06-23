@@ -16,9 +16,13 @@ public class ProfileInfoResponse {
     public ProfileInfoResponse(Member member) {
         this.memberId = member.getId();
         this.nickname = member.getNickname();
-        this.role = member.getRole();
+        this.role = getType(member);
         this.address = member.getAddress();
         this.profileImage = member.getProfileImagePath();
         this.phoneNumber = member.getPhoneNumber();
+    }
+
+    private static MemberRole getType(Member member) {
+        return member.getPhoneNumber() == null || member.getPhoneNumber().isEmpty() ? null : member.getRole();
     }
 }
