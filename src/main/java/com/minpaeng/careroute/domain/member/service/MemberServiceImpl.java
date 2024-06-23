@@ -68,7 +68,7 @@ public class MemberServiceImpl implements MemberService {
                 .message("로그인 완료")
                 .memberId(member.getId())
                 .nickname(member.getNickname())
-                .type(member.getRole())
+                .type(getType(member))
                 .phoneNumber(member.getPhoneNumber())
                 .imageUrl(member.getProfileImagePath())
                 .build();
@@ -285,8 +285,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByPhoneNumber(phoneNumber)
                 .orElseThrow(this::getNotExistMember);
 
-        return new MemberRoleResponse(member.getRole());
+        return new MemberRoleResponse(getType(member));
     }
+
 
 //    @Override
 //    public BaseResponse connectCode(String socialId, ConnectionCodeRequest request) {
@@ -374,6 +375,9 @@ public class MemberServiceImpl implements MemberService {
 //                .message("연결 생성 완료")
 //                .build();
 //    }
+    private static MemberRole getType(Member member) {
+        return member.getPhoneNumber() == null || member.getPhoneNumber().isEmpty() ? null : member.getRole();
+    }
 
     private Member getMember(String socialId) {
         return memberRepository.findMemberBySocialId(socialId)
