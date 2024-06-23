@@ -129,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = getMember(socialId);
-        if (member.getRole() != null) throw CustomException.builder()
+        if (getType(member) != null) throw CustomException.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .code(HttpStatus.BAD_REQUEST.value())
                 .message("이미 사용자 유형이 선택되었습니다: " + member.getRole().name())
