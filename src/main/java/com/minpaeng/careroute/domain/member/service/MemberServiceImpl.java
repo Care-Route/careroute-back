@@ -1,11 +1,12 @@
 package com.minpaeng.careroute.domain.member.service;
 
+import com.minpaeng.careroute.domain.alarm.dto.request.PersonalAlarmSendRequest;
+import com.minpaeng.careroute.domain.alarm.service.AlarmService;
 import com.minpaeng.careroute.domain.member.dto.ConnectionDto;
 import com.minpaeng.careroute.domain.member.dto.PhoneAuthDto;
 import com.minpaeng.careroute.domain.member.dto.request.ConnectionProposalRequest;
 import com.minpaeng.careroute.domain.member.dto.request.InitialMemberInfoRequest;
 import com.minpaeng.careroute.domain.member.dto.request.MemberJoinRequest;
-import com.minpaeng.careroute.domain.member.dto.response.ConnectionProposalResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberJoinResponse;
 import com.minpaeng.careroute.domain.member.dto.response.MemberRoleResponse;
 import com.minpaeng.careroute.domain.member.repository.ConnectionRepository;
@@ -25,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final ConnectionAuthRepository connectionAuthRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final SimpMessagingTemplate template;
+    private final AlarmService alarmService;
 
     @Transactional
     @Override
@@ -185,13 +185,14 @@ public class MemberServiceImpl implements MemberService {
         }
 
         connectionAuthRepository.save(connectionDto);
-        log.info("기기 연결 요청 시작");
-        Map<String, Object> headers = Map.of("success", true, "type", "connectionProposal");
-        ConnectionProposalResponse response = ConnectionProposalResponse.builder()
-                .member(member1)
+        log.info("기기 연결 fcm 시작");
+        PersonalAlarmSendRequest message = PersonalAlarmSendRequest.builder()
+                .toId(connectionDto.getTargetId())
+                .title("상대방이 연결을 요청했어요!")
+                .content("앱에서 연결을 받아주세요.")
                 .build();
-        template.convertAndSend("/sub/" + member1.getId(), response, headers);
-        log.info("기기 연결 요청 종료: ");
+        alarmService.sendMessageToPersonal(message);
+        log.info("기기 연결 fcm 종료: ");
 
         return BaseResponse.builder()
                 .statusCode(HttpStatus.OK.value())

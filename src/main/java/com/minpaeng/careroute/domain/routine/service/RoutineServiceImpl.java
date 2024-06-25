@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +67,18 @@ public class RoutineServiceImpl implements RoutineService {
     public RoutineListResponse getRoutines(String socialId) {
         Member member = getMember(socialId);
         List<Routine> routines = getRoutinesOfTargets(member);
+        List<RoutineResponse> responses = routines.stream().map(RoutineResponse::new).toList();
+        return RoutineListResponse.builder()
+                .statusCode(200)
+                .message("일정 목록 조회 완료")
+                .routines(responses)
+                .build();
+    }
+
+    @Override
+    public RoutineListResponse getTargetRoutines(String socialId, int targetId) {
+        Member member = getMember(socialId);
+        List<Routine> routines = getRoutinesByTargetId(member, targetId);
         List<RoutineResponse> responses = routines.stream().map(RoutineResponse::new).toList();
         return RoutineListResponse.builder()
                 .statusCode(200)
@@ -174,6 +185,21 @@ public class RoutineServiceImpl implements RoutineService {
                     .stream().map(Connection::getTarget).toList();
             return routineRepository
                     .findByMemberIdsWithGuideAndTargetAndDestinations(member, targets);
+        } else if (member.getRole() == MemberRole.TARGET) {
+            return routineRepository
+                    .findByMemberWithGuideAndTargetAndDestinations(member);
+        }
+        log.info("사용자 유형 미선택 상태로 일정 조회 시도");
+        return new ArrayList<>();
+    }
+
+    private List<Routine> getRoutinesByTargetId(Member member, int targetId) {
+        if (member.getRole() == MemberRole.GUIDE) {
+            Member target = getMember(targetId);
+            if (connectionRepository.findByGuideAndTarget(member, target).isEmpty())
+                throw getInvalidConnectionException();
+            return routineRepository
+                    .findByMemberWithGuideAndTargetAndDestinations(target);
         } else if (member.getRole() == MemberRole.TARGET) {
             return routineRepository
                     .findByMemberWithGuideAndTargetAndDestinations(member);

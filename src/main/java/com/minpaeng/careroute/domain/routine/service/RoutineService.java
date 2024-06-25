@@ -12,11 +12,13 @@ import java.util.List;
 public interface RoutineService {
     TargetInfoListResponse getTargetInfo(String socialId);
 
-    RoutineListResponse getRoutines(String name);
+    RoutineListResponse getRoutines(String socialId);
 
-    RoutineDetailResponse getRoutine(String name, int routineId);
+    RoutineListResponse getTargetRoutines(String socialId, int targetId);
+
+    RoutineDetailResponse getRoutine(String socialId, int routineId);
 
     BaseResponse saveRoutine(String socialId, RoutineSaveRequest request);
 
-    BaseResponse deleteRoutine(String name, int routineId);
+    BaseResponse deleteRoutine(String socialId, int routineId);
 }

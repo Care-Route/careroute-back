@@ -84,7 +84,9 @@ public class MemberController {
 
     @Operation(summary = "기기 연결 제거", description = "기기 연결 삭제 API")
     @DeleteMapping("/connection")
-    public BaseResponse deleteConnection(Principal principal, @RequestParam int targetId) {
+    public BaseResponse deleteConnection(Principal principal,
+                                         @RequestParam(name = "targetId") int targetId) {
+        log.info("기기 연결 제거 진입: " + targetId);
         return memberService.deleteConnection(principal.getName(), targetId);
     }
 }

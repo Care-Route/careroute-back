@@ -16,31 +16,31 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class RouteWebSocketController {
-    private final SimpMessagingTemplate template;
-
-    @MessageMapping(value = "/{memberId}")
-    public void testWebSocket(@DestinationVariable int memberId,
-                            @Payload TestWebSocketRequest request) {
-        log.info("웹 소켓 수신: " + request.getContent() + " " + memberId);
-
-        Map<String, Object> headers = Map.of("success", true, "type", "test");
-        template.convertAndSend("/sub/" + memberId, request, headers);
-        log.info("웹 소켓 발신 완료: " + memberId);
-    }
-
-//    @SubscribeMapping("/sub/{memberId}")
-//    public void handleSubscription(@DestinationVariable String memberId) {
-//        log.info("구독 수신: memberId" + memberId);
+//    private final SimpMessagingTemplate template;
+//
+////    @MessageMapping(value = "/{memberId}")
+////    public void testWebSocket(@DestinationVariable int memberId,
+////                            @Payload TestWebSocketRequest request) {
+////        log.info("웹 소켓 수신: " + request.getContent() + " " + memberId);
+////
+////        Map<String, Object> headers = Map.of("success", true, "type", "test");
+////        template.convertAndSend("/sub/" + memberId, request, headers);
+////        log.info("웹 소켓 발신 완료: " + memberId);
+////    }
+////
+//////    @SubscribeMapping("/sub/{memberId}")
+//////    public void handleSubscription(@DestinationVariable String memberId) {
+//////        log.info("구독 수신: memberId" + memberId);
+//////    }
+//
+//    @MessageMapping(value = "/{memberId}/route")
+//    public void positionShare(@DestinationVariable int memberId,
+//                              @Payload PositionShareRequest request) {
+//        log.info("위치 공유 웹 소켓 수신: " + request.getLatitude() + " " + request.getLongitude()
+//                + " " + memberId);
+//
+//        Map<String, Object> headers = Map.of("success", true, "type", "positionShare");
+//        template.convertAndSend("/sub/" + memberId, request, headers);
+//        log.info("위치 공유 소켓 발신 완료: " + memberId);
 //    }
-
-    @MessageMapping(value = "/route/{memberId}")
-    public void positionShare(@DestinationVariable int memberId,
-                              @Payload PositionShareRequest request) {
-        log.info("위치 공유 웹 소켓 수신: " + request.getLatitude() + " " + request.getLongitude()
-                + " " + memberId);
-
-        Map<String, Object> headers = Map.of("success", true, "type", "positionShare");
-        template.convertAndSend("/sub/" + memberId, request, headers);
-        log.info("위치 공유 소켓 발신 완료: " + memberId);
-    }
 }

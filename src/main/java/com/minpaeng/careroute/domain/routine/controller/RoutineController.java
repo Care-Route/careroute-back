@@ -32,13 +32,22 @@ public class RoutineController {
     @Operation(summary = "안내대상 조회", description = "안내인과 연결된 안내대상 목록 조회 API")
     @GetMapping("/targets")
     public TargetInfoListResponse getTargetInfo(Principal principal) {
+        log.info("안내 대상 조회 진입");
         return routineService.getTargetInfo(principal.getName());
     }
 
     @Operation(summary = "일정 목록 조회", description = "일정 목록 조회 API")
     @GetMapping
     public RoutineListResponse getRoutines(Principal principal) {
+        log.info("일정 목록 조회 진입");
         return routineService.getRoutines(principal.getName());
+    }
+
+    @Operation(summary = "특정 타겟의 일정 목록 조회", description = "특정 타겟의 일정 목록 조회 API")
+    @GetMapping("/detail/{targetId}")
+    public RoutineListResponse getTargetRoutines(Principal principal,
+                                                 @PathVariable int targetId) {
+        return routineService.getTargetRoutines(principal.getName(), targetId);
     }
 
     @Operation(summary = "일정 상세 조회", description = "일정 상세 조회 API")
@@ -59,6 +68,7 @@ public class RoutineController {
     @DeleteMapping
     public BaseResponse deleteRoutine(Principal principal,
                                       @RequestParam int routineId) {
+        log.info("일정 제거 진입: " + routineId);
         return routineService.deleteRoutine(principal.getName(), routineId);
     }
 }

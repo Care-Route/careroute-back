@@ -46,8 +46,10 @@ public class AlarmServiceImpl implements AlarmService {
             log.info("Successfully sent message: {}", response);
             return response;
         } catch (FirebaseMessagingException e) {
-            throw new RuntimeException("알림 전송 실패: " + e);
+            log.error("알림 전송 실패: " + e);
+//            throw new RuntimeException("알림 전송 실패: " + e);
         }
+        return "";
     }
 
     private Member getMember(int toId) {
