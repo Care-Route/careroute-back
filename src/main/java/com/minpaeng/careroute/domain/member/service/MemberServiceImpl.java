@@ -20,6 +20,7 @@ import com.minpaeng.careroute.domain.member.repository.redis.PhoneAuthRepository
 import com.minpaeng.careroute.domain.member.security.OIDCDecodePayload;
 import com.minpaeng.careroute.domain.member.security.OauthOIDCHelper;
 import com.minpaeng.careroute.global.dto.BaseResponse;
+import com.minpaeng.careroute.global.dto.SocketMessage;
 import com.minpaeng.careroute.global.event.SMSAuthEvent;
 import com.minpaeng.careroute.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -45,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final ApplicationEventPublisher eventPublisher;
     private final AlarmService alarmService;
+    private final RestClient restClient;
 
     @Transactional
     @Override
@@ -194,10 +197,30 @@ public class MemberServiceImpl implements MemberService {
         alarmService.sendMessageToPersonal(message);
         log.info("기기 연결 fcm 종료: ");
 
+        sendInAppRequest(connectionDto.getTargetId());
+
         return BaseResponse.builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("기기 연결 요청 성공: 10분 유지")
                 .build();
+    }
+
+    private void sendInAppRequest(int targetId) {
+        String socketServerUrl = "http://localhost:4000/send_message";
+        SocketMessage request = new SocketMessage(
+                targetId,
+                "상대방이 연결을 요청했어요!",
+                "앱에서 연결을 받아주세요."
+        );
+        try {
+            restClient
+                    .post()
+                    .uri(socketServerUrl)
+                    .body(request)
+                    .retrieve();
+        } catch (RestClientException e) {
+            log.error("연결 생성 웹소켓 요청 실패: " + e);
+        }
     }
 
     @Override
@@ -216,7 +239,7 @@ public class MemberServiceImpl implements MemberService {
                             .code(HttpStatus.BAD_REQUEST.value())
                             .message("인증 정보가 존재하지 않습니다.")
                             .build());
-             connection = Connection.builder()
+            connection = Connection.builder()
                     .guide(to)
                     .target(from)
                     .build();
@@ -232,8 +255,7 @@ public class MemberServiceImpl implements MemberService {
                     .guide(from)
                     .target(to)
                     .build();
-        }
-        else {
+        } else {
 //            throw CustomException.builder()
 //                    .status(HttpStatus.BAD_REQUEST)
 //                    .code(HttpStatus.NO_CONTENT.value())
@@ -316,7 +338,7 @@ public class MemberServiceImpl implements MemberService {
 //                .build();
 //    }
 
-//    @Transactional
+    //    @Transactional
 //    @Override
 //    public BaseResponse connectDevice(String socialId, ConnectionRequest request) {
 //        Member to = memberRepository.findMemberBySocialId(socialId)

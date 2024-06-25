@@ -43,12 +43,15 @@ public class RoutineServiceImpl implements RoutineService {
     public TargetInfoListResponse getTargetInfo(String socialId) {
         List<Object[]> results = memberRepository.findMemberBySocialIdWithConnections(socialId);
         if (results.isEmpty()) {
-            throw getNotExistMemberException();
+//            throw getNotExistMemberException();
+            return null;
         }
 
         List<Member> targets = new ArrayList<>();
 
         for (Object[] result : results) {
+            log.info(result[0] + " "+ result[1] + " " + result[2]);
+            if (result[0] == null) continue;
             Member target = new Member((Integer) result[0], (String) result[1], (String) result[2]);
             targets.add(target);
         }

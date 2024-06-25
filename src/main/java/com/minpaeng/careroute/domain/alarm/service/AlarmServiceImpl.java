@@ -33,11 +33,16 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     private Message makePersonalMessage(PersonalAlarmSendRequest request, String token) {
-        return Message.builder()
-                .putData("title", request.getTitle())
-                .putData("content", request.getContent())
-                .setToken(token)
-                .build();
+        try {
+            return Message.builder()
+                    .putData("title", request.getTitle())
+                    .putData("content", request.getContent())
+                    .setToken(token)
+                    .build();
+        } catch (Exception e) {
+            log.error("파이어베이스 메세지 생성 오류: " + e.getMessage());
+        }
+        return null;
     }
 
     private String sendMessage(Message message) {
@@ -46,8 +51,11 @@ public class AlarmServiceImpl implements AlarmService {
             log.info("Successfully sent message: {}", response);
             return response;
         } catch (FirebaseMessagingException e) {
-            log.error("알림 전송 실패: " + e);
+            log.error("알림 전송 실패(파이어베이스 오류): " + e);
 //            throw new RuntimeException("알림 전송 실패: " + e);
+        }
+        catch (Exception e) {
+            log.error("알림 전송 실패(서버 오류): " + e.getMessage());
         }
         return "";
     }
