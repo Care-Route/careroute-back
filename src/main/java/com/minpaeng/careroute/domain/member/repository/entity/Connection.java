@@ -23,19 +23,16 @@ public class Connection {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_id")
-    private Member to;
+    @JoinColumn(name = "guide_id")
+    private Member guide;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_id")
-    private Member from;
-
-    private String authCode;
+    @JoinColumn(name = "target_id", nullable = false)
+    private Member target;
 
     @Builder
-    public Connection(Member to, Member from, String authCode) {
-        this.to = to;
-        this.from = from;
-        this.authCode = authCode;
+    public Connection(Member guide, Member target) {
+        this.guide = guide;
+        this.target = target;
     }
 }

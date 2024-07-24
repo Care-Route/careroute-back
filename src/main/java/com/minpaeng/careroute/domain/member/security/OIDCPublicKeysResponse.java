@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("KakaoOIDC")
+@RedisHash(value = "KakaoOIDC", timeToLive = 604800)
 public class OIDCPublicKeysResponse implements Serializable {
     @Id
     Long id;

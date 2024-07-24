@@ -36,6 +36,11 @@ springdoc:
   api-docs:
     path: /api/swagger-ui.html
 
+coolsms:
+  apikey: ${COOL_API_KEY}
+  apisecret: ${COOL_API_SECRET}
+  fromnumber: ${COOL_FROMNUMBER}
+
 ---
 
 spring:
@@ -57,7 +62,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
@@ -83,4 +88,11 @@ spring:
       ddl-auto: update
     show-sql: true
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        id:
+          new_generator_mappings: true
